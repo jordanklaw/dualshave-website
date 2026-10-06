@@ -243,12 +243,15 @@
       color: var(--brass);
     }
 
+    /* 1px gap over a border-colored ground keeps both columns the same width. */
     .pair {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
     }
 
-    .pair .product + .product { border-left: 1px solid var(--border); }
+    .pair .product { background: var(--bg); }
     .pair .product__frame { aspect-ratio: 3 / 4; }
     .pair .product__info { padding: 16px 14px 22px; }
     .pair .product__name { font-size: 15px; }
