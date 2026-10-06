@@ -19,7 +19,7 @@
       --panel: #141310;
       --nav-bg: rgba(14, 13, 9, 0.92);
       --nav-h: 56px;
-      --gutter: 20px;
+      --gutter: 16px;
       --serif: Georgia, "Times New Roman", Times, serif;
       --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
       --ease: all 0.3s ease;
@@ -80,10 +80,26 @@
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      padding: 0 8px;
-      background: var(--nav-bg);
+      /* 40px buttons with 20px icons: offset so the icons sit on the text gutter. */
+      padding: 0 calc(var(--gutter) - 10px);
+      background-color: transparent;
+      transition: background-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease;
+    }
+
+    .nav.is-scrolled,
+    .nav.is-solid {
+      background-color: var(--nav-bg);
       -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
+    }
+
+    .nav-sentinel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 8px;
+      pointer-events: none;
     }
 
     .nav__btn {
@@ -161,6 +177,15 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(to bottom, rgba(14, 13, 9, 0.7) 0%, rgba(14, 13, 9, 0) 20%);
+      pointer-events: none;
     }
 
     .hero::after {
@@ -243,26 +268,28 @@
       color: var(--brass);
     }
 
-    /* 1px gap over a border-colored ground keeps both columns the same width. */
     .pair {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      padding: var(--gutter) var(--gutter) 0;
     }
 
-    .pair .product { background: var(--bg); }
     .pair .product__frame { aspect-ratio: 3 / 4; }
-    .pair .product__info { padding: 16px 14px 22px; }
-    .pair .product__name { font-size: 15px; }
+    .pair .product__info { padding: 14px 0 28px; }
+    .pair .product__name { font-size: 16px; }
 
     /* Lifestyle */
-    .lifestyle { aspect-ratio: 4 / 5; }
+    /* Kobu-scale image break: three quarters of the viewport. */
+    .lifestyle {
+      height: 75vh;
+      height: 75svh;
+    }
 
     /* Founder */
     .founder__note {
       max-width: 300px;
-      padding: 44px var(--gutter);
+      padding: 56px var(--gutter);
       box-sizing: content-box;
     }
 
@@ -296,8 +323,8 @@
 
     .results__label {
       position: absolute;
-      left: 12px;
-      bottom: 12px;
+      left: var(--gutter);
+      bottom: var(--gutter);
       font-size: 10px;
       letter-spacing: 0.12em;
       color: var(--muted);
@@ -356,7 +383,6 @@
     @media (min-width: 768px) {
       :root { --nav-h: 64px; --gutter: 32px; }
 
-      .nav { padding: 0 20px; }
       .nav__logo, .nav__logo img { height: 18px; }
 
       /* Wide crops show under half the portrait's height; bias up to keep the tube top and eyes. */
@@ -371,10 +397,8 @@
 
       .single .product__info { padding-left: 0; padding-right: 0; }
 
-      .pair .product__info { padding: 20px 24px 28px; }
-      .pair .product__name { font-size: 16px; }
-
-      .lifestyle { aspect-ratio: 16 / 9; }
+      .pair { gap: 16px; }
+      .pair .product__info { padding: 18px 0 32px; }
 
       .founder__note {
         max-width: 400px;
@@ -383,8 +407,6 @@
       }
 
       .signature { width: 170px; }
-
-      .results__label { left: 20px; bottom: 20px; }
 
       .fade { padding: 80px var(--gutter); }
     }
@@ -397,6 +419,8 @@
   </style>
 </head>
 <body>
+
+  <div class="nav-sentinel" aria-hidden="true"></div>
 
   <header class="nav">
     <button class="nav__btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu" data-menu-toggle>
@@ -517,6 +541,18 @@
         img.addEventListener('load', function () { img.classList.remove('is-missing'); });
       });
 
+      var nav = document.querySelector('.nav');
+      var sentinel = document.querySelector('.nav-sentinel');
+
+      // Transparent over the hero; solid with blur as soon as the page leaves the top.
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          nav.classList.toggle('is-scrolled', !entries[0].isIntersecting);
+        }).observe(sentinel);
+      } else {
+        nav.classList.add('is-scrolled');
+      }
+
       var toggle = document.querySelector('[data-menu-toggle]');
       var menu = document.getElementById('menu');
 
@@ -525,6 +561,7 @@
         menu.setAttribute('aria-hidden', String(!open));
         toggle.setAttribute('aria-expanded', String(open));
         document.body.classList.toggle('menu-open', open);
+        nav.classList.toggle('is-solid', open);
       }
 
       toggle.addEventListener('click', function () {
