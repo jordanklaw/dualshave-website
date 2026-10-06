@@ -5,19 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Dual-Shave</title>
   <meta name="description" content="Dual-Shave. Beverly Hills.">
-  <meta name="theme-color" content="#0E0D09">
+  <meta name="theme-color" content="#FAFAF8">
   <style>
     :root {
-      --bg: #0E0D09;
-      --text: #C8BFA8;
-      --brass: #A6885E;
-      --muted: #7A7262;
-      --dim: #5C5445;
-      --faint: #3A362E;
-      --border: #1E1C16;
-      --placeholder: #1A1710;
-      --panel: #141310;
-      --nav-bg: rgba(14, 13, 9, 0.92);
+      --bg: #FAFAF8;
+      --text: #1A1A1A;
+      --text-muted: #6B6B6B;
+      --text-dim: #999999;
+      --accent: #1A1A1A;
+      --border: #E8E8E6;
+      --surface: #F0F0EC;
       --nav-h: 56px;
       --gutter: 16px;
       --serif: Georgia, "Times New Roman", Times, serif;
@@ -54,11 +51,11 @@
 
     [id] { scroll-margin-top: var(--nav-h); }
 
-    /* Image containers read as dark plates until photography lands. */
+    /* Image containers read as quiet plates until photography loads. */
     .frame {
       position: relative;
       overflow: hidden;
-      background: var(--placeholder);
+      background: var(--surface);
     }
 
     .frame img {
@@ -82,16 +79,13 @@
       align-items: center;
       /* 40px buttons with 20px icons: offset so the icons sit on the text gutter. */
       padding: 0 calc(var(--gutter) - 10px);
-      background-color: transparent;
-      transition: background-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease;
+      background-color: var(--bg);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
     }
 
     .nav.is-scrolled,
-    .nav.is-solid {
-      background-color: var(--nav-bg);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-    }
+    .nav.is-solid { border-bottom-color: var(--border); }
 
     .nav-sentinel {
       position: absolute;
@@ -136,10 +130,7 @@
       inset: var(--nav-h) 0 0 0;
       z-index: 19;
       padding: 40px var(--gutter);
-      background: var(--nav-bg);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      border-top: 1px solid var(--border);
+      background: var(--bg);
       opacity: 0;
       visibility: hidden;
       transition: var(--ease);
@@ -166,7 +157,7 @@
       height: 100vh;
       height: 100svh;
       margin-top: calc(-1 * var(--nav-h));
-      background: var(--placeholder);
+      background: var(--surface);
       overflow: hidden;
     }
 
@@ -179,20 +170,11 @@
       object-position: center;
     }
 
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: linear-gradient(to bottom, rgba(14, 13, 9, 0.7) 0%, rgba(14, 13, 9, 0) 20%);
-      pointer-events: none;
-    }
-
     .hero::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, var(--bg) 0%, rgba(14, 13, 9, 0.6) 22%, rgba(14, 13, 9, 0) 55%);
+      background: linear-gradient(to top, var(--bg) 0%, rgba(250, 250, 248, 0.6) 22%, rgba(250, 250, 248, 0) 55%);
       pointer-events: none;
     }
 
@@ -217,7 +199,7 @@
       height: 1px;
       margin: 18px 0 22px;
       border: 0;
-      background: var(--brass);
+      background: var(--accent);
     }
 
     /* Buttons */
@@ -232,12 +214,12 @@
     }
 
     .btn--outline {
-      border: 1px solid var(--brass);
+      border: 1px solid var(--accent);
       color: var(--text);
     }
 
     .btn--solid {
-      background: var(--brass);
+      background: var(--accent);
       color: var(--bg);
       letter-spacing: 0.14em;
     }
@@ -258,14 +240,14 @@
       margin-top: 6px;
       font-size: 12px;
       letter-spacing: 0.04em;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     .product__price {
       margin-top: 4px;
       font-size: 14px;
       letter-spacing: 0.02em;
-      color: var(--brass);
+      color: var(--text);
     }
 
     .pair {
@@ -297,10 +279,10 @@
       font-family: var(--serif);
       font-size: 15px;
       line-height: 1.7;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
-    /* Ink is pre-tinted to --muted in the PNG so it reads as part of the note. */
+    /* Ink is pre-tinted to --text-muted in the PNG so it reads as part of the note. */
     .signature {
       width: 150px;
       height: auto;
@@ -310,15 +292,18 @@
     .signature.is-missing { display: none; }
 
     /* Midnight Fade */
+    /* The one inverted block on the page. */
     .fade {
       padding: 56px var(--gutter);
       text-align: center;
+      background: var(--text);
+      border-top-color: var(--text);
     }
 
     .fade__place {
       font-size: 11px;
       letter-spacing: 0.14em;
-      color: var(--dim);
+      color: var(--text-dim);
     }
 
     .fade__title {
@@ -326,6 +311,11 @@
       font-family: var(--serif);
       font-size: 24px;
       line-height: 1.2;
+      color: var(--bg);
+    }
+
+    .fade .btn--solid {
+      background: var(--bg);
       color: var(--text);
     }
 
@@ -340,14 +330,14 @@
     .footer__marks {
       font-size: 10px;
       letter-spacing: 0.12em;
-      color: var(--faint);
+      color: var(--text-muted);
     }
 
     .footer__name {
       margin-top: 10px;
       font-size: 12px;
       letter-spacing: 0.2em;
-      color: var(--dim);
+      color: var(--text);
     }
 
     /* Quiet hover states, pointer devices only. */
@@ -514,7 +504,7 @@
       var nav = document.querySelector('.nav');
       var sentinel = document.querySelector('.nav-sentinel');
 
-      // Transparent over the hero; solid with blur as soon as the page leaves the top.
+      // Hairline under the nav as soon as the page leaves the top.
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
           nav.classList.toggle('is-scrolled', !entries[0].isIntersecting);
