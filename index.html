@@ -201,12 +201,14 @@
     .section--brass { border-top-color: var(--brass); }
 
     /* Hero */
-    /* On phones the photo fills the hero by height, so the tube's tagline sits at a fixed
-       72.8-74.2% of the hero and "NET WT" at 83.6-85.2%. The copy sits 244px above the
-       bottom (32px padding + 200px copy + 12px clearance). On short screens, lift the photo
-       just enough to keep the tagline above the headline; 0 when the screen is tall enough. */
+    /* On phones the photo fills the hero by height, so its features sit at fixed fractions
+       of the hero: tagline 72.8-74.2%, thumbnail tip 80.8%, "NET WT" 83.6-85.2%. The
+       headline's line box starts 224px above the bottom (24px padding + 200px of copy) and
+       its first ink (the f and d ascenders) 7px lower. Lift the photo just enough that the
+       headline's ink starts 4px below the fingertip: 222px - 19.2% of the hero height,
+       never negative. */
     .hero {
-      --hero-shift: max(0px, 244px + env(safe-area-inset-bottom, 0px) - 25.8%);
+      --hero-shift: max(0px, 222px + env(safe-area-inset-bottom, 0px) - 19.2%);
       position: relative;
       height: 100vh;
       height: 100svh;
@@ -225,15 +227,16 @@
       transform: translateY(calc(-1 * var(--hero-shift)));
     }
 
-    /* Clear above the tagline, soft behind the headline, solid page white from just above
-       "NET WT" down, so the subhead, rule and CTAs sit on a clean ground. Tracks the shift. */
+    /* Starts 9px above the headline and is solid page white by the second headline line,
+       or sooner if "NET WT" would otherwise show, so the subhead, rule and CTAs sit on a
+       clean ground and the tagline above stays clear. */
     .hero::after {
       content: "";
       position: absolute;
       inset: 0;
       background: linear-gradient(to bottom,
-        rgba(250, 250, 248, 0) calc(74.8% - var(--hero-shift)),
-        var(--bg) calc(83.4% - var(--hero-shift)));
+        rgba(250, 250, 248, 0) calc(100% - 233px - env(safe-area-inset-bottom, 0px)),
+        var(--bg) min(calc(100% - 151px - env(safe-area-inset-bottom, 0px)), calc(83.4% - var(--hero-shift))));
       pointer-events: none;
     }
 
@@ -244,7 +247,7 @@
       bottom: 0;
       z-index: 1;
       padding: 0 var(--gutter);
-      padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
 
     .hero__title {
