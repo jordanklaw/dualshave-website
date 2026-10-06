@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Dual-Shave</title>
+  <meta name="description" content="Dual-Shave. Beverly Hills.">
+  <meta name="theme-color" content="#0E0D09">
+  <style>
+    :root {
+      --bg: #0E0D09;
+      --text: #C8BFA8;
+      --brass: #A6885E;
+      --muted: #7A7262;
+      --dim: #5C5445;
+      --faint: #3A362E;
+      --border: #1E1C16;
+      --placeholder: #1A1710;
+      --panel: #141310;
+      --nav-bg: rgba(14, 13, 9, 0.92);
+      --nav-h: 56px;
+      --gutter: 20px;
+      --serif: Georgia, "Times New Roman", Times, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --ease: all 0.3s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body.menu-open { overflow: hidden; }
+
+    img { display: block; max-width: 100%; }
+
+    a { color: inherit; text-decoration: none; }
+
+    h1, h2, h3, p { margin: 0; font-weight: 400; }
+
+    [id] { scroll-margin-top: var(--nav-h); }
+
+    /* Image containers read as dark plates until photography lands. */
+    .frame {
+      position: relative;
+      overflow: hidden;
+      background: var(--placeholder);
+    }
+
+    .frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: var(--ease);
+    }
+
+    img.is-missing { opacity: 0; }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: var(--nav-h);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 8px;
+      background: var(--nav-bg);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--ease);
+    }
+
+    .nav__btn svg { width: 20px; height: 20px; }
+    .nav__btn--cart { justify-self: end; }
+
+    .nav__logo {
+      display: block;
+      min-width: 120px;
+      height: 16px;
+    }
+
+    .nav__logo img {
+      height: 16px;
+      width: auto;
+      margin: 0 auto;
+    }
+
+    .menu {
+      position: fixed;
+      inset: var(--nav-h) 0 0 0;
+      z-index: 19;
+      padding: 40px var(--gutter);
+      background: var(--nav-bg);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--ease);
+    }
+
+    .menu.is-open { opacity: 1; visibility: visible; }
+
+    .menu ul { list-style: none; margin: 0; padding: 0; }
+    .menu li + li { margin-top: 22px; }
+
+    .menu a {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--text);
+      transition: var(--ease);
+    }
+
+    /* Sections are divided by hairlines, never by gaps. */
+    .section { border-top: 1px solid var(--border); }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      height: 100vh;
+      height: 100svh;
+      margin-top: calc(-1 * var(--nav-h));
+      background: var(--placeholder);
+      overflow: hidden;
+    }
+
+    .hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, var(--bg) 0%, rgba(14, 13, 9, 0.6) 22%, rgba(14, 13, 9, 0) 55%);
+      pointer-events: none;
+    }
+
+    .hero__content {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 1;
+      padding: var(--gutter);
+      padding-bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+    }
+
+    .hero__title {
+      font-family: var(--serif);
+      font-size: 38px;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .rule {
+      width: 32px;
+      height: 1px;
+      margin: 18px 0 22px;
+      border: 0;
+      background: var(--brass);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 12px 26px;
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.16em;
+      transition: var(--ease);
+    }
+
+    .btn--outline {
+      border: 1px solid var(--brass);
+      color: var(--text);
+    }
+
+    .btn--solid {
+      background: var(--brass);
+      color: var(--bg);
+      letter-spacing: 0.14em;
+    }
+
+    /* Products */
+    .product__frame { aspect-ratio: 4 / 5; }
+
+    .product__info { padding: 18px var(--gutter) 24px; }
+
+    .product__name {
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.25;
+      color: var(--text);
+    }
+
+    .product__size {
+      margin-top: 6px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    .product__price {
+      margin-top: 4px;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      color: var(--brass);
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .pair .product + .product { border-left: 1px solid var(--border); }
+    .pair .product__frame { aspect-ratio: 3 / 4; }
+    .pair .product__info { padding: 16px 14px 22px; }
+    .pair .product__name { font-size: 15px; }
+
+    /* Lifestyle */
+    .lifestyle { aspect-ratio: 4 / 5; }
+
+    /* Founder */
+    .founder p {
+      max-width: 300px;
+      padding: 44px var(--gutter);
+      box-sizing: content-box;
+      font-family: var(--serif);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    /* Before / After */
+    .results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .results__plate {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      background: var(--panel);
+    }
+
+    .results__label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    /* Midnight Fade */
+    .fade {
+      padding: 56px var(--gutter);
+      text-align: center;
+    }
+
+    .fade__place {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--dim);
+    }
+
+    .fade__title {
+      margin: 14px 0 26px;
+      font-family: var(--serif);
+      font-size: 24px;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px var(--gutter);
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer__marks {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--faint);
+    }
+
+    .footer__name {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+    }
+
+    /* Quiet hover states, pointer devices only. */
+    @media (hover: hover) {
+      .btn:hover,
+      .nav__btn:hover,
+      .menu a:hover { opacity: 0.85; }
+
+      .product:hover .frame img { transform: scale(1.02); }
+    }
+
+    @media (min-width: 768px) {
+      :root { --nav-h: 64px; --gutter: 32px; }
+
+      .nav { padding: 0 20px; }
+      .nav__logo, .nav__logo img { height: 18px; }
+
+      .hero__content { padding: 40px; }
+
+      .single .product {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .single .product__info { padding-left: 0; padding-right: 0; }
+
+      .pair .product__info { padding: 20px 24px 28px; }
+      .pair .product__name { font-size: 16px; }
+
+      .lifestyle { aspect-ratio: 16 / 9; }
+
+      .founder p {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 72px var(--gutter);
+      }
+
+      .results__label { left: 20px; bottom: 20px; }
+
+      .fade { padding: 80px var(--gutter); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+      .product:hover .frame img { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <button class="nav__btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+        <line x1="2" y1="7" x2="18" y2="7"/>
+        <line x1="2" y1="13" x2="18" y2="13"/>
+      </svg>
+    </button>
+    <a class="nav__logo" href="#top" aria-label="Dual-Shave">
+      <img src="images/logo.png" alt="Dual-Shave">
+    </a>
+    <a class="nav__btn nav__btn--cart" href="#" aria-label="Cart">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+        <path d="M4 6.5h12l-1 11H5z"/>
+        <path d="M7.5 6.5V5a2.5 2.5 0 0 1 5 0v1.5"/>
+      </svg>
+    </a>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Site" aria-hidden="true">
+    <ul>
+      <li><a href="#shave-wash">Shave + Wash</a></li>
+      <li><a href="#pimple-spotter">Pimple Spotter</a></li>
+      <li><a href="#bod">BOD</a></li>
+      <li><a href="#midnight-fade">Midnight Fade</a></li>
+    </ul>
+  </nav>
+
+  <main id="top">
+
+    <section class="hero" aria-label="Dual-Shave">
+      <img src="images/hero.jpg" alt="">
+      <div class="hero__content">
+        <h1 class="hero__title">Beverly Hills</h1>
+        <hr class="rule">
+        <a class="btn btn--outline" href="#shave-wash">Shop</a>
+      </div>
+    </section>
+
+    <section class="section single" id="shave-wash">
+      <article class="product">
+        <div class="frame product__frame">
+          <img src="images/product-shave-wash.jpg" alt="Dual-Shave Shave + Wash, tube and pump bottle" loading="lazy">
+        </div>
+        <div class="product__info">
+          <h2 class="product__name">Shave + Wash</h2>
+          <p class="product__size">3.4 oz / 6.5 oz</p>
+          <p class="product__price">from $15.99</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="section pair">
+      <article class="product" id="pimple-spotter">
+        <div class="frame product__frame">
+          <img src="images/product-pimple-spotter.jpg" alt="Dual-Shave Pimple Spotter jar" loading="lazy">
+        </div>
+        <div class="product__info">
+          <h2 class="product__name">Pimple Spotter</h2>
+          <p class="product__size">1 oz</p>
+          <p class="product__price">$15.00</p>
+        </div>
+      </article>
+      <article class="product" id="bod">
+        <div class="frame product__frame">
+          <img src="images/product-bod.jpg" alt="Dual-Shave BOD bottle" loading="lazy">
+        </div>
+        <div class="product__info">
+          <h2 class="product__name">BOD</h2>
+          <p class="product__size">8 oz</p>
+          <p class="product__price">$59.00</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="frame lifestyle">
+        <img src="images/lifestyle-splash.jpg" alt="" loading="lazy">
+      </div>
+    </section>
+
+    <section class="section founder">
+      <p>Nisan Lamden trained as a diamond grader at the Gemological Institute of America before becoming a licensed cosmetologist in Beverly Hills. Dual-Shave is the line he formulated for the clients at his chair.</p>
+    </section>
+
+    <section class="section results" aria-label="Before and after">
+      <div class="results__plate">
+        <span class="results__label">before</span>
+      </div>
+      <div class="results__plate">
+        <span class="results__label">after third use</span>
+      </div>
+    </section>
+
+    <section class="section fade" id="midnight-fade">
+      <p class="fade__place">Beverly Hills · By appointment only</p>
+      <h2 class="fade__title">Midnight Fade</h2>
+      <a class="btn btn--solid" href="#">Book</a>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p class="footer__marks">FDA-cleared · Patented · Cruelty-free · Made in the USA</p>
+    <p class="footer__name">DUAL-SHAVE</p>
+  </footer>
+
+  <script>
+    (function () {
+      // Hide broken-image glyphs so the dark plate shows until photography is added.
+      document.querySelectorAll('img').forEach(function (img) {
+        var hide = function () { img.classList.add('is-missing'); };
+        if (img.complete && !img.naturalWidth) hide();
+        img.addEventListener('error', hide);
+        img.addEventListener('load', function () { img.classList.remove('is-missing'); });
+      });
+
+      var toggle = document.querySelector('[data-menu-toggle]');
+      var menu = document.getElementById('menu');
+
+      function setMenu(open) {
+        menu.classList.toggle('is-open', open);
+        menu.setAttribute('aria-hidden', String(!open));
+        toggle.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('menu-open', open);
+      }
+
+      toggle.addEventListener('click', function () {
+        setMenu(!menu.classList.contains('is-open'));
+      });
+
+      menu.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setMenu(false);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setMenu(false);
+      });
+    })();
+  </script>
+</body>
+</html>
