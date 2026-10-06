@@ -1,0 +1,83 @@
+# Publishes every branch to GitHub Pages (served from the gh-pages branch):
+#   default branch -> https://<owner>.github.io/<repo>/
+#   any branch     -> https://<owner>.github.io/<repo>/b/<branch-with-slashes-as-dashes>/
+#   index          -> https://<owner>.github.io/<repo>/b/
+# Deleting a branch removes its preview.
+name: Preview
+
+on:
+  push:
+    branches-ignore: [gh-pages]
+  delete:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name != 'delete' || (github.event.ref_type == 'branch' && github.event.ref != 'gh-pages')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        if: github.event_name != 'delete'
+        with:
+          path: src
+
+      - name: Update gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT: ${{ github.event_name }}
+          PUSHED_BRANCH: ${{ github.ref_name }}
+          DELETED_BRANCH: ${{ github.event.ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          repo="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads "$repo" gh-pages >/dev/null; then
+            git clone --depth 1 --branch gh-pages "$repo" site
+          else
+            git init -b gh-pages site
+            git -C site remote add origin "$repo"
+          fi
+
+          if [ "$EVENT" = delete ]; then branch="$DELETED_BRANCH"; else branch="$PUSHED_BRANCH"; fi
+          slug=$(printf '%s' "$branch" | sed 's/[^A-Za-z0-9._-]/-/g')
+          dest="site/b/$slug"
+
+          copy() { tar -C src --exclude=./.git --exclude=./.github -cf - . | tar -C "$1" -xf -; }
+
+          rm -rf "$dest"
+          if [ "$EVENT" != delete ]; then
+            mkdir -p "$dest"
+            copy "$dest"
+            if [ "$branch" = "$DEFAULT_BRANCH" ]; then
+              find site -mindepth 1 -maxdepth 1 ! -name .git ! -name b -exec rm -rf {} +
+              copy site
+            fi
+          fi
+          touch site/.nojekyll
+
+          mkdir -p site/b
+          {
+            echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            echo '<title>Branch previews</title><style>body{font:16px system-ui;margin:2rem;line-height:1.8}</style>'
+            echo '<h1>Branch previews</h1><ul>'
+            for d in site/b/*/; do
+              [ -d "$d" ] || continue
+              n=$(basename "$d")
+              echo "<li><a href=\"$n/\">$n</a></li>"
+            done
+            echo '</ul>'
+          } > site/b/index.html
+
+          cd site
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git -c user.name=github-actions -c user.email=github-actions@users.noreply.github.com \
+            commit -q -m "Preview: $EVENT $branch @ ${GITHUB_SHA::7}"
+          git push origin gh-pages
