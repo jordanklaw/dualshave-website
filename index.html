@@ -331,12 +331,14 @@
       color: var(--ivory);
     }
 
+    /* Outline only: a filled block would read as pasted over the photograph. */
     .fade .btn {
-      padding: 14px 36px;
-      background: var(--ivory);
-      border: 1px solid var(--ivory);
-      color: var(--text);
-      letter-spacing: 0.12em;
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid rgba(250, 249, 246, 0.35);
+      color: var(--ivory);
+      letter-spacing: 0.14em;
+      transition: border-color 0.3s ease;
     }
 
     /* Footer */
@@ -369,6 +371,11 @@
       .menu a:hover { opacity: 0.85; }
 
       .product:hover .frame img { transform: scale(1.02); }
+
+      .fade .btn:hover {
+        opacity: 1;
+        border-color: rgba(250, 249, 246, 0.8);
+      }
     }
 
     @media (min-width: 768px) {
