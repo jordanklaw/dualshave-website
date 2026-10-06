@@ -582,19 +582,17 @@
       .hero__sub { font-size: 19px; }
       .rule { margin: 32px 0 28px; }
 
-      /* Featured product: image and details side by side on the shared measure. */
-      .single { padding: 80px var(--gutter); }
+      /* Featured product: the landscape shot spans the shared measure, details beneath. */
+      .single { padding: 80px var(--gutter) 64px; }
 
       .single .product {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        column-gap: 80px;
-        align-items: center;
         max-width: var(--measure);
         margin: 0 auto;
       }
 
-      .single .product__info { padding: 0; }
+      .single .product__frame { aspect-ratio: 16 / 9; }
+
+      .single .product__info { padding: 24px 0 0; }
       .single .product__name { font-size: 36px; }
       .single .product__size { margin-top: 12px; font-size: 13px; }
       .single .product__price { margin-top: 6px; font-size: 16px; }
@@ -702,7 +700,10 @@
     <section class="section section--brass single" id="shave-wash">
       <article class="product">
         <div class="frame product__frame">
-          <img src="images/product-shave-wash.jpg" alt="Dual-Shave Shave + Wash, tube and pump bottle" loading="lazy">
+          <picture>
+            <source media="(min-width: 960px)" srcset="images/product-shave-wash-wide.jpg">
+            <img src="images/product-shave-wash.jpg" alt="Dual-Shave Shave + Wash, tube and pump bottle" loading="lazy">
+          </picture>
         </div>
         <div class="product__info">
           <h2 class="product__name">Shave + Wash</h2>
