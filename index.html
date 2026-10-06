@@ -294,12 +294,27 @@
 
     .signature.is-missing { display: none; }
 
-    /* Midnight Fade: the one inverted block on the page. */
+    /* Midnight Fade: the one inverted block, text floating over the barber's tools. */
     .fade {
-      padding: 68px var(--gutter);
+      position: relative;
+      padding: 72px var(--gutter) 64px;
       text-align: center;
-      background: var(--text);
+      background: var(--text) url('images/midnight-fade-bg.jpg') center bottom / cover no-repeat;
       border-top: 0;
+    }
+
+    /* Heavier at the top behind the text, lighter below so the tools show through. */
+    .fade::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(26, 26, 26, 0.82) 0%, rgba(26, 26, 26, 0.55) 60%, rgba(26, 26, 26, 0.45) 100%);
+      pointer-events: none;
+    }
+
+    .fade > * {
+      position: relative;
+      z-index: 1;
     }
 
     .fade__place {
@@ -383,7 +398,12 @@
 
       .signature { width: 170px; }
 
-      .fade { padding: 88px var(--gutter); }
+      /* Match the photo's proportions so the text keeps to its dark upper third and the tools stay below. */
+      .fade {
+        aspect-ratio: 1620 / 912;
+        max-height: 100svh;
+        padding: 128px var(--gutter) 0;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
