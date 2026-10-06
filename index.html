@@ -551,7 +551,8 @@
     @media (min-width: 960px) {
       :root { --measure: 1200px; --gutter: 48px; }
 
-      /* Hero: copy on the page ground at left, the full portrait at right, no washes. */
+      /* Hero (960-1279px): copy on the page ground at left, the portrait at right. Too
+         narrow for the 16:9 shot without the copy landing on the hand. */
       .hero {
         height: calc(100svh - var(--nav-h));
         min-height: 560px;
@@ -575,7 +576,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 0 64px 0 max(var(--gutter), calc((100vw - var(--measure)) / 2));
+        padding: 0 64px 0 var(--gutter);
       }
 
       .hero__title { font-size: 56px; line-height: 1.05; }
@@ -645,6 +646,29 @@
       .fade__title { font-size: 40px; }
     }
 
+    /* 1280px and up: the 16:9 hero runs full bleed. Its left third is plain out-of-focus
+       wall, so the copy sits there; a light wash on that edge only keeps it legible. */
+    @media (min-width: 1280px) {
+      .hero img {
+        left: 0;
+        width: 100%;
+        object-position: center 40%;
+      }
+
+      .hero::after {
+        display: block;
+        background: linear-gradient(to right, rgba(250, 250, 248, 0.6) 0%, rgba(250, 250, 248, 0) 34%);
+      }
+
+      .hero__content {
+        right: auto;
+        /* Anchored to the photo, not the content measure: the hand starts at about 27%
+           of the frame width, so the copy stays inside the first quarter at any width. */
+        width: calc(clamp(48px, 6vw, 120px) + 360px);
+        padding: 0 0 0 clamp(48px, 6vw, 120px);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition: none !important; }
@@ -685,7 +709,10 @@
   <main id="top">
 
     <section class="hero" aria-label="Dual-Shave">
-      <img src="images/hero.jpg" alt="">
+      <picture>
+        <source media="(min-width: 1280px)" srcset="images/hero-wide.jpg">
+        <img src="images/hero.jpg" alt="">
+      </picture>
       <div class="hero__content">
         <h1 class="hero__title">Crafted in Beverly Hills</h1>
         <p class="hero__sub">Skincare and grooming by Nisan Lamden</p>
