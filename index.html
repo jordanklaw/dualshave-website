@@ -260,15 +260,27 @@
     .lifestyle { aspect-ratio: 4 / 5; }
 
     /* Founder */
-    .founder p {
+    .founder__note {
       max-width: 300px;
       padding: 44px var(--gutter);
       box-sizing: content-box;
+    }
+
+    .founder p {
       font-family: var(--serif);
       font-size: 15px;
       line-height: 1.7;
       color: var(--muted);
     }
+
+    /* Ink is pre-tinted to --muted in the PNG so it reads as part of the note. */
+    .signature {
+      width: 110px;
+      height: auto;
+      margin-top: 24px;
+    }
+
+    .signature.is-missing { display: none; }
 
     /* Before / After */
     .results {
@@ -347,6 +359,9 @@
       .nav { padding: 0 20px; }
       .nav__logo, .nav__logo img { height: 18px; }
 
+      /* Wide crops show under half the portrait's height; bias up to keep the tube top and eyes. */
+      .hero img { object-position: center 30%; }
+
       .hero__content { padding: 40px; }
 
       .single .product {
@@ -361,11 +376,13 @@
 
       .lifestyle { aspect-ratio: 16 / 9; }
 
-      .founder p {
+      .founder__note {
         max-width: 400px;
         margin: 0 auto;
         padding: 72px var(--gutter);
       }
+
+      .signature { width: 130px; }
 
       .results__label { left: 20px; bottom: 20px; }
 
@@ -462,7 +479,10 @@
     </section>
 
     <section class="section founder">
-      <p>Nisan Lamden trained as a diamond grader at the Gemological Institute of America before becoming a licensed cosmetologist in Beverly Hills. Dual-Shave is the line he formulated for the clients at his chair.</p>
+      <div class="founder__note">
+        <p>Nisan Lamden trained as a diamond grader at the Gemological Institute of America before becoming a licensed cosmetologist in Beverly Hills. Dual-Shave is the line he formulated for the clients at his chair.</p>
+        <img class="signature" src="images/signature.png" alt="Nisan Lamden">
+      </div>
     </section>
 
     <section class="section results" aria-label="Before and after">
