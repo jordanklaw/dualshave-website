@@ -84,19 +84,45 @@
       border-bottom: 1px solid var(--brass);
     }
 
+    /* 44px tap target; the -11px margin keeps the 22px icon's left edge on the gutter. */
     .nav__menu {
       justify-self: start;
-      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-left: -11px;
       padding: 0;
       border: 0;
       background: none;
-      font-family: var(--sans);
-      font-size: 11px;
-      letter-spacing: 0.12em;
       color: var(--text);
       cursor: pointer;
       transition: var(--ease);
     }
+
+    .nav__menu:focus { outline: none; }
+    .nav__menu:focus-visible { outline: 1px solid var(--text); outline-offset: -4px; }
+
+    /* Fine strokes with butt caps to match the wordmark's hairline weight. */
+    .nav__menu svg {
+      width: 22px;
+      height: 15.75px;
+      overflow: visible;
+    }
+
+    .nav__menu line {
+      stroke: currentColor;
+      stroke-width: 1.25;
+      stroke-linecap: butt;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav__menu[aria-expanded="true"] .nav__line--top { transform: translateY(7.25px) rotate(45deg); }
+    .nav__menu[aria-expanded="true"] .nav__line--mid { opacity: 0; }
+    .nav__menu[aria-expanded="true"] .nav__line--bot { transform: translateY(-7.25px) rotate(-45deg); }
 
     .nav__btn {
       display: inline-flex;
@@ -174,11 +200,13 @@
       object-position: center;
     }
 
+    /* Gentle bottom fade only; legibility comes from the copy block's own ground below,
+       so the tube's brand name and "2 iN 1" stay untouched. */
     .hero::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, var(--bg) 0%, rgba(250, 250, 248, 0.85) 26%, rgba(250, 250, 248, 0) 58%);
+      background: linear-gradient(to top, var(--bg) 0%, rgba(250, 250, 248, 0) 30%);
       pointer-events: none;
     }
 
@@ -231,6 +259,28 @@
       margin: 24px 0 20px;
       border: 0;
       background: var(--brass);
+    }
+
+    /* Shop plus a quiet text companion, labels on one baseline; wraps below on narrow screens. */
+    .hero__ctas {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: 28px;
+      row-gap: 16px;
+    }
+
+    .hero__link {
+      font-family: var(--sans);
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.16em;
+      color: rgba(26, 26, 26, 0.8);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(26, 26, 26, 0.3);
+      text-underline-offset: 3px;
+      transition: text-decoration-color 0.3s ease;
     }
 
     /* Buttons */
@@ -413,6 +463,8 @@
 
       .product:hover .frame img { transform: scale(1.02); }
 
+      .hero__link:hover { text-decoration-color: var(--text); }
+
       .fade .btn:hover {
         opacity: 1;
         border-bottom-color: var(--ivory);
@@ -431,8 +483,8 @@
 
       /* Keep the clean ground to the copy side so the face stays untouched. */
       .hero__content::before {
-        -webkit-mask-image: linear-gradient(to right, #000 40%, transparent 60%);
-        mask-image: linear-gradient(to right, #000 40%, transparent 60%);
+        -webkit-mask-image: linear-gradient(to right, #000 48%, transparent 64%);
+        mask-image: linear-gradient(to right, #000 48%, transparent 64%);
       }
 
       .hero__title { max-width: none; }
@@ -473,7 +525,13 @@
 <body>
 
   <header class="nav">
-    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle>MENU</button>
+    <button class="nav__menu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+      <svg viewBox="0 0 22 15.75" aria-hidden="true">
+        <line class="nav__line--top" x1="0" y1="0.625" x2="22" y2="0.625"/>
+        <line class="nav__line--mid" x1="0" y1="7.875" x2="22" y2="7.875"/>
+        <line class="nav__line--bot" x1="0" y1="15.125" x2="22" y2="15.125"/>
+      </svg>
+    </button>
     <a class="nav__logo" href="#top" aria-label="Dual-Shave">
       <img src="images/logo.png" alt="Dual-Shave">
     </a>
@@ -502,7 +560,10 @@
         <h1 class="hero__title">Crafted in Beverly Hills</h1>
         <p class="hero__sub">Skincare and grooming by Nisan Lamden</p>
         <hr class="rule">
-        <a class="btn btn--outline" href="#shave-wash">Shop</a>
+        <div class="hero__ctas">
+          <a class="btn btn--outline" href="#shave-wash">Shop</a>
+          <a class="hero__link" href="#">Reserve a Visit</a>
+        </div>
       </div>
     </section>
 
@@ -585,7 +646,6 @@
         menu.classList.toggle('is-open', open);
         menu.setAttribute('aria-hidden', String(!open));
         toggle.setAttribute('aria-expanded', String(open));
-        toggle.textContent = open ? 'CLOSE' : 'MENU';
         document.body.classList.toggle('menu-open', open);
       }
 
